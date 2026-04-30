@@ -616,12 +616,14 @@
   .btn-submit:disabled { background: var(--text-muted); cursor: not-allowed; }
   .submit-status { font-size: 0.82rem; color: var(--text-muted); font-family: var(--font-mono); }
   .try-result { margin-top: 1.5rem; background: var(--surface); border: 1px solid var(--border-light); border-radius: 4px; overflow: hidden; }
-  .try-result .report { padding: 2.5rem !important; overflow-wrap: break-word; word-wrap: break-word; }
-  .try-result .report-section { max-width: 100%; overflow: hidden; }
+  .try-result .report { padding: 2.5rem !important; overflow-wrap: break-word; word-wrap: break-word; box-sizing: border-box; width: 100%; }
+  .try-result .report > * { max-width: 100%; box-sizing: border-box; }
+  .try-result .report-section { max-width: 100%; overflow: hidden; box-sizing: border-box; }
   .try-result .human-review,
-  .try-result .info-needed { margin-left: 0; margin-right: 0; }
-  .try-result .report-table { table-layout: fixed; word-wrap: break-word; }
+  .try-result .info-needed { margin-left: 0; margin-right: 0; max-width: 100%; box-sizing: border-box; }
+  .try-result .report-table { table-layout: fixed; word-wrap: break-word; max-width: 100%; }
   .try-result .investigation-category ul { padding-right: 0.5rem; }
+  .try-result p { max-width: 100% !important; }
 
   /* ══════════════════════════════════════════
      LIMITATIONS
