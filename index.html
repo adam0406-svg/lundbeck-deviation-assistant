@@ -1318,7 +1318,8 @@ async function submitDeviation() {
     if (!response.ok) throw new Error('Server returned ' + response.status);
 
     const data = await response.json();
-    result.innerHTML = '<div class="report">' + data.html + '</div>';
+    const html = Array.isArray(data) ? data[0].html : data.html;
+    result.innerHTML = '<div class="report">' + html + '</div>';
     result.style.display = 'block';
     result.scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch (err) {
