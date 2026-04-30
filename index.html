@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pharma Quality Deviation & CAPA Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f5f0;
+    --surface: #ffffff;
+    --surface-alt: #f0efe9;
+    --border: #d4d2c8;
+    --border-light: #e8e6dd;
+    --text: #1a1a18;
+    --text-secondary: #5c5b55;
+    --text-muted: #8a8880;
+    --accent: #2d5a27;
+    --accent-light: #e8f0e6;
+    --severity-minor: #3b7dd8;
+    --severity-minor-bg: #eef4fc;
+    --severity-major: #c47a0a;
+    --severity-major-bg: #fef6e8;
+    --severity-critical: #c0392b;
+    --severity-critical-bg: #fdecea;
+    --warning-bg: #fef9ed;
+    --warning-border: #e8d9a8;
+    --warning-text: #6b5b1f;
+    --info-needed-bg: #eef4fc;
+    --info-needed-border: #a8c8e8;
+    --font-sans: 'IBM Plex Sans', -apple-system, sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  /* ══════════════════════════════════════════
+     HERO / DESCRIPTIVE SECTION
+     Dark background, visually separate from examples
+     ══════════════════════════════════════════ */
+
+  .hero {
+    background: var(--text);
+    color: var(--bg);
+    position: relative;
+    overflow: hidden;
+  }
+  /* Dot grid overlay */
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 24px 24px;
+    pointer-events: none;
+  }
+  /* Animated gradient orbs */
+  .hero-orbs {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+  }
+  .hero-orb-1 {
+    width: 500px; height: 500px;
+    background: rgba(45,90,39,0.18);
+    top: -10%; left: -5%;
+    animation: orbDrift1 12s ease-in-out infinite;
+  }
+  .hero-orb-2 {
+    width: 400px; height: 400px;
+    background: rgba(45,90,39,0.12);
+    top: 10%; right: -8%;
+    animation: orbDrift2 15s ease-in-out infinite;
+  }
+  .hero-orb-3 {
+    width: 300px; height: 300px;
+    background: rgba(45,90,39,0.1);
+    bottom: -15%; left: 40%;
+    animation: orbDrift3 18s ease-in-out infinite;
+  }
+  @keyframes orbDrift1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(60px, 40px) scale(1.1); }
+    66% { transform: translate(-20px, 60px) scale(0.95); }
+  }
+  @keyframes orbDrift2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(-50px, 30px) scale(0.9); }
+    66% { transform: translate(30px, -40px) scale(1.08); }
+  }
+  @keyframes orbDrift3 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(40px, -30px) scale(1.12); }
+    66% { transform: translate(-60px, 20px) scale(0.92); }
+  }
+  /* Scan line sweep */
+  .hero-scanline {
+    position: absolute;
+    left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(45,90,39,0.6) 20%, rgba(45,90,39,0.8) 50%, rgba(45,90,39,0.6) 80%, transparent 100%);
+    box-shadow: 0 0 15px 3px rgba(45,90,39,0.25), 0 0 40px 8px rgba(45,90,39,0.1);
+    pointer-events: none;
+    z-index: 2;
+    animation: scanSweep 6s ease-in-out infinite;
+  }
+  @keyframes scanSweep {
+    0% { top: -2px; opacity: 0; }
+    5% { opacity: 1; }
+    95% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+  }
+  /* Particle canvas */
+  .hero-particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    padding: 3.5rem 0 3rem;
+  }
+  .hero-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .hero h1 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+  }
+  .hero-subtitle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: rgba(246,245,240,0.55);
+    margin-top: 0.5rem;
+  }
+  .hero-subtitle svg { flex-shrink: 0; opacity: 0.6; }
+  .header-meta {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    text-align: right;
+    font-family: var(--font-mono);
+  }
+
+  /* Description area within hero */
+  .hero-desc {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+  }
+  .hero-desc p {
+    font-size: 0.92rem;
+    color: rgba(246,245,240,0.7);
+    line-height: 1.7;
+  }
+
+  /* Methodology tag */
+  .methodology-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(45,90,39,0.2);
+    border: 1px solid rgba(45,90,39,0.35);
+    border-radius: 4px;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.78rem;
+    font-family: var(--font-mono);
+    color: rgba(246,245,240,0.65);
+    margin-top: 1rem;
+  }
+  .methodology-tag svg { opacity: 0.7; }
+
+  /* Design principles within hero */
+  .principles-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 2rem;
+  }
+  .principle-item {
+    padding: 0 1.25rem;
+    border-left: 1px solid rgba(255,255,255,0.08);
+  }
+  .principle-item:first-child { padding-left: 0; border-left: none; }
+  .principle-item:last-child { padding-right: 0; }
+  .principle-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(45,90,39,0.2);
+    border-radius: 6px;
+    margin-bottom: 0.75rem;
+    transition: box-shadow 0.3s, background 0.3s;
+  }
+  .principle-item:hover .principle-icon {
+    background: rgba(45,90,39,0.35);
+    box-shadow: 0 0 16px rgba(45,90,39,0.3);
+  }
+  .principle-icon svg { opacity: 0.8; }
+  .principle-item strong {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: rgba(246,245,240,0.9);
+    margin-bottom: 0.35rem;
+  }
+  .principle-item span {
+    font-size: 0.78rem;
+    color: rgba(246,245,240,0.45);
+    line-height: 1.55;
+  }
+
+  /* ══════════════════════════════════════════
+     HOW IT WORKS STRIP (transition between hero and demo)
+     ══════════════════════════════════════════ */
+
+  .how-strip {
+    background: var(--accent);
+    padding: 1.25rem 0;
+    position: relative;
+  }
+  .how-strip-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .how-step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: rgba(255,255,255,0.85);
+    font-family: var(--font-mono);
+  }
+  .how-step svg { opacity: 0.7; }
+  .how-arrow {
+    color: rgba(255,255,255,0.3);
+    font-size: 0.9rem;
+  }
+
+  /* ══════════════════════════════════════════
+     DEMO SECTION (light background, examples)
+     ══════════════════════════════════════════ */
+
+  .demo-section {
+    padding: 2.5rem 0;
+  }
+
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    font-family: var(--font-mono);
+  }
+
+  /* Examples header */
+  .examples-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .examples-header-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .examples-header h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .examples-header p {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 0.1rem;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 0;
+  }
+  .tab {
+    padding: 0.7rem 1.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    font-family: var(--font-sans);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .tab:hover {
+    color: var(--text);
+    background: var(--surface-alt);
+  }
+  .tab.active {
+    color: var(--text);
+    border-bottom-color: var(--accent);
+    font-weight: 600;
+  }
+  .severity-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  .severity-dot.minor { background: var(--severity-minor); }
+  .severity-dot.major { background: var(--severity-major); }
+  .severity-dot.critical { background: var(--severity-critical); }
+
+  /* Report output */
+  .tab-content {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+  }
+  .tab-content.active { display: block; }
+
+  .report { padding: 2rem; }
+
+  .input-summary {
+    background: var(--surface-alt);
+    border: 1px solid var(--border-light);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .input-summary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), rgba(45,90,39,0.2), transparent);
+    animation: scanline 3s ease-in-out infinite;
+  }
+  @keyframes scanline {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 1; }
+  }
+  .input-summary-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    margin-bottom: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .input-summary-label .input-cursor {
+    display: inline-block;
+    width: 6px;
+    height: 14px;
+    background: var(--accent);
+    animation: blink 1s step-end infinite;
+    border-radius: 1px;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  .input-summary dt { font-weight: 500; color: var(--text-secondary); }
+  .input-summary dd { color: var(--text); }
+  .input-summary dl {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 0.4rem 1rem;
+  }
+  /* dt/dd colors handled in input-summary block above */
+
+  .report-section {
+    margin-bottom: 2rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .report-section:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .report-section h3 {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .report-section h3 .section-num {
+    background: var(--text);
+    color: var(--bg);
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+  }
+  .report-section p {
+    font-size: 0.9rem;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+    max-width: 720px;
+  }
+  .report-section p:last-child { margin-bottom: 0; }
+
+  .severity-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 3px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    font-family: var(--font-mono);
+    margin-bottom: 0.75rem;
+  }
+  .severity-badge.minor { background: var(--severity-minor-bg); color: var(--severity-minor); border: 1px solid var(--severity-minor); }
+  .severity-badge.major { background: var(--severity-major-bg); color: var(--severity-major); border: 1px solid var(--severity-major); }
+  .severity-badge.critical { background: var(--severity-critical-bg); color: var(--severity-critical); border: 1px solid var(--severity-critical); }
+
+  .human-review {
+    background: var(--warning-bg);
+    border: 1px solid var(--warning-border);
+    border-left: 3px solid var(--severity-major);
+    padding: 0.75rem 1rem;
+    font-size: 0.82rem;
+    color: var(--warning-text);
+    margin-top: 1rem;
+    border-radius: 0 3px 3px 0;
+    line-height: 1.5;
+  }
+  .human-review strong { font-family: var(--font-mono); font-size: 0.75rem; }
+
+  .info-needed {
+    background: var(--info-needed-bg);
+    border: 1px solid var(--info-needed-border);
+    border-left: 3px solid var(--severity-minor);
+    padding: 0.75rem 1rem;
+    font-size: 0.82rem;
+    color: #1a4a6b;
+    margin-top: 1rem;
+    border-radius: 0 3px 3px 0;
+    line-height: 1.5;
+  }
+
+  .sub-heading {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .sub-heading:first-child { margin-top: 0; }
+
+  .investigation-category { margin-bottom: 1.25rem; }
+  .investigation-category:last-of-type { margin-bottom: 0; }
+  .investigation-category h4 {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .investigation-category h4 .cat-icon { font-size: 0.75rem; color: var(--text-muted); }
+  .investigation-category ul { list-style: none; padding-left: 0; }
+  .investigation-category li {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    padding: 0.2rem 0 0.2rem 1rem;
+    position: relative;
+    line-height: 1.5;
+  }
+  .investigation-category li::before { content: '›'; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+  .investigation-category .na {
+    font-style: italic;
+    color: var(--text-muted);
+    padding-left: 1rem;
+    font-size: 0.85rem;
+  }
+
+  .capa-item { margin-bottom: 0.75rem; font-size: 0.85rem; line-height: 1.6; }
+  .capa-item:last-child { margin-bottom: 0; }
+  .capa-item strong { font-weight: 600; }
+  .capa-owner { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted); font-style: italic; }
+
+  .reg-item { margin-bottom: 0.5rem; font-size: 0.85rem; line-height: 1.5; }
+  .reg-item strong { font-family: var(--font-mono); font-size: 0.8rem; font-weight: 500; }
+
+  /* ══════════════════════════════════════════
+     TRY IT YOURSELF
+     ══════════════════════════════════════════ */
+
+  .try-section { padding: 2.5rem 0; border-top: 1px solid var(--border-light); }
+  .try-form {
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    padding: 2rem;
+  }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  .form-group { display: flex; flex-direction: column; }
+  .form-group.full-width { grid-column: 1 / -1; }
+  .form-group label {
+    font-size: 0.78rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 0.4rem;
+    font-family: var(--font-mono);
+  }
+  .form-group input, .form-group textarea {
+    font-family: var(--font-sans); font-size: 0.9rem; padding: 0.6rem 0.75rem;
+    border: 1px solid var(--border); border-radius: 3px;
+    background: var(--bg); color: var(--text); transition: border-color 0.15s;
+  }
+  .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--accent); background: #fff; }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+  .submit-row { margin-top: 1.5rem; display: flex; align-items: center; gap: 1rem; }
+  .btn-submit {
+    font-family: var(--font-sans); font-size: 0.85rem; font-weight: 600;
+    padding: 0.65rem 1.75rem; background: var(--accent); color: #fff;
+    border: none; border-radius: 3px; cursor: pointer; transition: background 0.15s;
+  }
+  .btn-submit:hover { background: #224a1e; }
+  .btn-submit:disabled { background: var(--text-muted); cursor: not-allowed; }
+  .submit-status { font-size: 0.82rem; color: var(--text-muted); font-family: var(--font-mono); }
+  .try-result { margin-top: 1.5rem; background: var(--surface); border: 1px solid var(--border-light); border-radius: 4px; }
+
+  /* ══════════════════════════════════════════
+     LIMITATIONS
+     ══════════════════════════════════════════ */
+
+  .limitations { padding: 2rem 0 3rem; border-top: 1px solid var(--border-light); }
+  .limitations-content { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1rem; }
+  .limitation-col h4 {
+    font-size: 0.78rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.05em; color: var(--text-muted); font-family: var(--font-mono);
+    margin-bottom: 0.75rem;
+  }
+  .limitation-col p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 0.5rem; }
+
+  /* ══════════════════════════════════════════
+     FOOTER
+     ══════════════════════════════════════════ */
+
+  .site-footer {
+    background: var(--text); color: var(--text-muted); padding: 1.5rem 0;
+    font-size: 0.78rem; font-family: var(--font-mono);
+  }
+  .site-footer .container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; }
+  .site-footer a { color: var(--bg); text-decoration: none; }
+
+  /* ══════════════════════════════════════════
+     RESPONSIVE
+     ══════════════════════════════════════════ */
+
+  @media (max-width: 768px) {
+    .hero-desc { grid-template-columns: 1fr; }
+    .principles-row { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .principle-item { border-left: none; padding: 0; }
+    .how-strip-inner { gap: 0.75rem; }
+    .how-arrow { display: none; }
+  }
+  @media (max-width: 640px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .limitations-content { grid-template-columns: 1fr; }
+    .input-summary dl { grid-template-columns: 1fr; }
+    .input-summary dt { font-weight: 600; margin-top: 0.4rem; }
+    .hero-top { flex-direction: column; }
+    .header-meta { text-align: left; }
+    .tabs { overflow-x: auto; }
+    .tab { white-space: nowrap; padding: 0.7rem 1rem; font-size: 0.8rem; }
+    .report { padding: 1.25rem; }
+    .principles-row { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 1.35rem; }
+  }
+
+  .spinner {
+    display: none; width: 18px; height: 18px;
+    border: 2px solid var(--border); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin 0.6s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ HERO / DESCRIPTIVE SECTION ═══════════════ -->
+<section class="hero">
+  <div class="hero-orbs">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-orb hero-orb-3"></div>
+  </div>
+  <div class="hero-scanline"></div>
+  <canvas class="hero-particles" id="hero-particles"></canvas>
+  <div class="container hero-inner">
+
+    <div class="hero-top">
+      <div>
+        <h1>Pharma Quality<br>Deviation & CAPA Assistant</h1>
+        <div class="hero-subtitle">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1v14M1 8h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          AI-assisted deviation analysis for GxP-regulated environments
+        </div>
+      </div>
+      <div class="header-meta">
+        Prototype by Adam Grøfte Barfod<br>
+        Built for Lundbeck application, 2026
+      </div>
+    </div>
+
+    <div class="hero-desc">
+      <p>
+        Quality teams in pharmaceutical manufacturing handle deviations daily, from documentation gaps to critical contamination events. Each one requires structured investigation, severity classification, root cause analysis, and corrective action planning. The documentation is rigorous, repetitive in structure, and time-consuming.
+      </p>
+      <p>
+        This prototype demonstrates how generative AI can assist that process. It takes structured deviation input and generates a first-draft investigation report with severity classification, Ishikawa-based root cause investigation areas, draft CAPA recommendations, and regulatory cross-references. The AI handles the structure. The quality expert provides the substance.
+      </p>
+    </div>
+
+    <div class="methodology-tag">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 3h12M2 8h12M2 13h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Built on the ISPE methodology for integrating generative AI into deviation management
+    </div>
+
+    <!-- Design Principles -->
+    <div class="principles-row">
+      <div class="principle-item">
+        <div class="principle-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="rgba(246,245,240,0.6)" stroke-width="1.3"/><path d="M5 8h6M8 5v6" stroke="rgba(246,245,240,0.6)" stroke-width="1.3" stroke-linecap="round"/></svg>
+        </div>
+        <strong>Structure, Not Substance</strong>
+        <span>AI generates the framework and documentation structure. Domain expertise, root cause determination, and quality decisions remain with the investigator.</span>
+      </div>
+      <div class="principle-item">
+        <div class="principle-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="3" stroke="rgba(246,245,240,0.6)" stroke-width="1.3"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="rgba(246,245,240,0.6)" stroke-width="1.3" stroke-linecap="round"/></svg>
+        </div>
+        <strong>Human-in-the-Loop by Design</strong>
+        <span>Every output section is marked for human review. The system classifies but never closes. It recommends but never approves. GxP compliance requires human oversight, and this is built into the architecture.</span>
+      </div>
+      <div class="principle-item">
+        <div class="principle-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 4l6-2 6 2v5.3c0 2.5-2.5 4.5-6 5.7-3.5-1.2-6-3.2-6-5.7V4z" stroke="rgba(246,245,240,0.6)" stroke-width="1.3" stroke-linejoin="round"/></svg>
+        </div>
+        <strong>Context Drives Quality</strong>
+        <span>Structured input fields ensure the AI receives the right context for each deviation. Generic prompts produce generic output. Specific, structured questions produce actionable drafts.</span>
+      </div>
+      <div class="principle-item">
+        <div class="principle-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v5l3 3" stroke="rgba(246,245,240,0.6)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="8" cy="8" r="6" stroke="rgba(246,245,240,0.6)" stroke-width="1.3"/></svg>
+        </div>
+        <strong>Honest About Limits</strong>
+        <span>When information is missing, the system flags it explicitly rather than fabricating details. Uncertainty is stated, not hidden. Conservative classification is the default.</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════ PROCESS STRIP ═══════════════ -->
+<div class="how-strip">
+  <div class="container how-strip-inner">
+    <div class="how-step">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M4 2h8a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z" stroke="currentColor" stroke-width="1.2"/><path d="M5 6h6M5 8.5h4M5 11h2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Structured Input
+    </div>
+    <span class="how-arrow">→</span>
+    <div class="how-step">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 8.5l1.5 1.5L10 7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      AI Analysis
+    </div>
+    <span class="how-arrow">→</span>
+    <div class="how-step">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 3h10v10H3z" stroke="currentColor" stroke-width="1.2"/><path d="M3 6h10M6 6v7" stroke="currentColor" stroke-width="1.2"/></svg>
+      Structured Report
+    </div>
+    <span class="how-arrow">→</span>
+    <div class="how-step">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="3" stroke="currentColor" stroke-width="1.2"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Human Review & Decision
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ DEMO SECTION ═══════════════ -->
+<section class="demo-section">
+  <div class="container">
+    <div class="examples-header">
+      <div class="examples-header-icon">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 4h12M3 9h12M3 14h8" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><circle cx="15" cy="14" r="2" stroke="#fff" stroke-width="1.3"/></svg>
+      </div>
+      <div>
+        <h2>Pre-loaded Example Outputs</h2>
+        <p>Three deviation scenarios processed by the AI assistant. Select a severity level to view the full report.</p>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('minor')">
+        <span class="severity-dot minor"></span> Minor: Documentation Error
+      </button>
+      <button class="tab" onclick="switchTab('major')">
+        <span class="severity-dot major"></span> Major: Temperature Excursion
+      </button>
+      <button class="tab" onclick="switchTab('critical')">
+        <span class="severity-dot critical"></span> Critical: Cleaning Failure
+      </button>
+    </div>
+
+    <!-- ═══ MINOR TAB ═══ -->
+    <div id="tab-minor" class="tab-content active">
+      <div class="report">
+        <div class="input-summary">
+          <div class="input-summary-label"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M4 2h8a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z" stroke="currentColor" stroke-width="1.3"/><path d="M5 6h6M5 8.5h4M5 11h2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg> User Input: Deviation Data <span class="input-cursor"></span></div>
+          <dl>
+            <dt>Event</dt>
+            <dd>Missing second-person verification signature on weighing step for excipient Lactose Monohydrate during batch record review. Correct weight confirmed via dispensing log and scale printout.</dd>
+            <dt>Discovered</dt>
+            <dd>2026-04-28, 14:30</dd>
+            <dt>Product / Batch</dt>
+            <dd>Escipra Tablets 10 mg, Batch EX-2026-0412</dd>
+            <dt>Process Step</dt>
+            <dd>Raw material dispensing: excipient weighing and verification</dd>
+            <dt>Expected</dt>
+            <dd>Operator signature AND second-person verification signature per SOP-RM-003 §4.2</dd>
+            <dt>Observed</dt>
+            <dd>Operator signature present. Verification signature missing (line 14).</dd>
+            <dt>Immediate Actions</dt>
+            <dd>Batch record flagged, placed on QA hold. Verifier confirmed verbally that verification was performed. Batch has not progressed beyond dispensing.</dd>
+          </dl>
+        </div>
+
+        <div class="report-section">
+          <h3><span class="section-num">1</span> Deviation Summary</h3>
+          <p>On 2026-04-28 at 14:30, during routine batch record review for Escipra Tablets 10 mg (Batch EX-2026-0412), a missing second-person verification signature was identified on the weighing step for excipient Lactose Monohydrate (line 14 of the batch record). The operator signature was present, and the correct weight was confirmed through cross-referencing with the dispensing log and scale printout. The batch has not progressed beyond the dispensing stage.</p>
+        </div>
+
+        <div class="report-section">
+          <h3><span class="section-num">2</span> Severity Classification</h3>
+          <div class="severity-badge minor">Minor</div>
+          <p>This deviation represents a documentation gap in a procedural requirement (dual-signature verification) rather than an error in the actual weighing operation. The correct weight has been independently confirmed via the dispensing log and scale printout. There is no indication that product quality or patient safety is impacted. However, the missing signature represents a failure to follow SOP-RM-003 Section 4.2, which constitutes a GMP documentation deficiency.</p>
+          <div class="human-review">
+            <strong>⚠ HUMAN REVIEW REQUIRED:</strong> Severity classification must be reviewed and confirmed by the QA reviewer. Consider whether this is an isolated occurrence or part of a pattern of documentation lapses for this operator, shift, or process step.
+          </div>
+        </div>
+
+        <div class="report-section">
+          <h3><span class="section-num">3</span> Impact Assessment</h3>
+          <div class="sub-heading">Product Quality</div>
+          <p>Low risk. The actual weighing was performed correctly as confirmed by independent records (dispensing log, scale printout). The excipient quantity in the batch is not in question.</p>
+          <div class="sub-heading">Patient Safety</div>
+          <p>No indication of patient safety risk. The correct amount of Lactose Monohydrate was dispensed.</p>
+          <div class="sub-heading">Batch Disposition</div>
+          <p>The batch is currently on QA hold at the dispensing stage. Given the independent confirmation of correct weighing, batch progression may be considered following completion of the deviation investigation and appropriate documentation correction.</p>
+          <div class="sub-heading">Scope</div>
+          <p>Assess whether this is an isolated event. Review recent batch records from the same operator, shift, and dispensing area for similar documentation gaps. If a pattern is identified, the severity classification should be escalated to Major.</p>
+          <div class="human-review">
+            <strong>⚠ HUMAN REVIEW REQUIRED:</strong> Batch disposition decision must be made by authorized QA personnel. Review whether the existing independent records (dispensing log, scale printout) provide sufficient documented evidence to support batch progression.
+          </div>
+        </div>
+
+        <div class="report-section">
+          <h3><span class="section-num">4</span> Root Cause Investigation Plan</h3>
+          <div class="investigation-category">
+            <h4><span class="cat-icon">●</span> Personnel</h4>
+            <ul>
+              <li>Was the verifier (Operator B) qualified and current on training for SOP-RM-003?</li>
+              <li>What was the workload and time pressure on Operator B during this dispensing session?</li>
+              <li>Were there any shift handovers, breaks, or interruptions during the verification step?</li>
+            </ul>
+          </div>
+          <div class="investigation-category">
+            <h4><span class="cat-icon">●</span> Process / Method</h4>
+            <ul>
+              <li>Does SOP-RM-003 clearly define when the verification signature must be applied (immediately after verification, or can it be batched)?</li>
+              <li>Is the batch record layout clear regarding which lines require dual signatures?</li>
+              <li>Has this SOP been recently revised, and if so, were all personnel retrained?</li>
+            </ul>
+          </div>
+          <div class="investigation-category">
+            <h4><span class="cat-icon">●</span> Equipment / Machine</h4>
+            <p class="na">N/A. Not equipment-related.</p>
+          </div>
+          <div class="investigation-category">
+            <h4><span class="cat-icon">●</span> Material</h4>
+            <p class="na">N/A. Not material-related.</p>
+          </div>
+          <div class="investigation-category">
+            <h4><span class="cat-icon">●</span> Measurement</h4>
+            <p class="na">N/A. The weighing itself was performed correctly.</p>
+          </div>
+          <div class="investigation-category">
+            <h4><span class="cat-icon">●</span> Environment</h4>
+            <ul>
+              <li>Were there any environmental factors (noise, congestion, shift change) in the dispensing area that may have contributed to the oversight?</li>
+              <li>Is the dispensing area layout conducive to completing documentation at the point of activity?</li>
+            </ul>
+          </div>
+          <div class="human-review">
+            <strong>⚠ HUMAN REVIEW REQUIRED:</strong> The investigator determines which investigation areas are relevant. Operator B should be interviewed to establish the circumstances of the missed signature.
+          </div>
+        </div>
+
+        <div class="report-section">
+          <h3><span class="section-num">5</span> Draft CAPA Recommendations</h3>
+          <div class="sub-heading">Corrective Actions</div>
+          <div class="capa-item">1. <strong>Complete the batch record documentation.</strong> Operator B to add the missing verification signature with a documented annotation explaining the late entry, per the site's data correction procedure. The annotation should reference this deviation number and include the current date/time. <span class="capa-owner">(Owner: QA / Operator B)</span></div>
+          <div class="capa-item">2. <strong>Confirm no other documentation gaps in this batch record.</strong> Perform a full review of Batch EX-2026-0412 batch record for any additional missing entries or signatures. <span class="capa-owner">(Owner: QA Reviewer)</span></div>
+          <div class="sub-heading">Preventive Actions</div>
+          <div class="capa-item">1. <strong>Targeted retraining on SOP-RM-003.</strong> Provide refresher training to Operator B on the requirement for immediate second-person verification signatures during dispensing activities. <span class="capa-owner">(Owner: Training / Production Supervisor)</span></div>
+          <div class="capa-item">2. <strong>Trend review of documentation deviations.</strong> Review the last 6 months of deviations in the dispensing area to determine whether missing signatures are a recurring issue. If a trend is identified, consider broader corrective action. <span class="capa-owner">(Owner: QA; may require change control if SOP revision needed)</span></div>
+          <div class="capa-item">3. <strong>Consider batch record design review.</strong> Evaluate whether the batch record format could be improved to make signature requirements more visually prominent (e.g., shaded mandatory fields, checkbox prompts). <span class="capa-owner">(Owner: QA / Document Control; requires change control)</span></div>
+          <div class="human-review">
+            <strong>⚠ HUMAN REVIEW REQUIRED:</strong> CAPA recommendations are suggestions only. Final CAPA plan must be developed by the investigation team. SOP revisions and batch record design changes require formal change control.
+          </div>
+        </div>
+
+        <div class="report-section">
+          <h3><span class="section-num">6</span> Regulatory Considerations</h3>
+          <div class="sub-heading">Applicable Frameworks</div>
+          <div class="reg-item"><strong>ICH Q10 §3.2.1:</strong> Management of deviations within the Pharmaceutical Quality System. This deviation should be documented and tracked within the site's deviation management system.</div>
+          <div class="reg-item"><strong>EU GMP Chapter 4:</strong> Requires that records be completed at the time each action is taken. A missing verification signature represents a departure from this requirement.</div>
+          <div class="reg-item"><strong>21 CFR 211.188:</strong> Requires complete batch production and control records, including documentation of each significant step in the manufacturing process.</div>
+          <div class="sub-heading">Reporting Considerations</div>
+          <p>Regulatory notification is not typically required for an isolated documentation deviation of this nature. Include in deviation trending data for the Annual Product Review. This type of deviation is commonly reviewed during regulatory inspections as part of GMP documentation compliance. Ensure the investigation and CAPA are thorough and well-documented.</p>
+          <div class="human-review">
+            <strong>⚠ HUMAN REVIEW REQUIRED:</strong> Regulatory reporting obligations must be assessed by Regulatory Affairs and QA leadership.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ MAJOR TAB ═══ -->
+    <div id="tab-major" class="tab-content">
+      <div class="report">
+        <div class="input-summary">
+          <div class="input-summary-label"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M4 2h8a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z" stroke="currentColor" stroke-width="1.3"/><path d="M5 6h6M5 8.5h4M5 11h2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg> User Input: Deviation Data <span class="input-cursor"></span></div>
+          <dl>
+            <dt>Event</dt>
+            <dd>Environmental monitoring alarm: Cold Storage Room CS-02 reached 9.2°C. Validated range 2–8°C. Excursion lasted ~2h 45min. Contains API intermediates for 3 batches and 12 reference standards.</dd>
+            <dt>Discovered</dt>
+            <dd>2026-04-28, 06:00 (morning shift review of overnight alarms)</dd>
+            <dt>Product / Batch</dt>
+            <dd>Multiple: Batches LU-2026-0087, LU-2026-0088, LU-2026-0091 (API intermediates) + 12 QC reference standards</dd>
+            <dt>Process Step</dt>
+            <dd>In-process storage of API intermediates between synthesis and formulation</dd>
+            <dt>Expected</dt>
+            <dd>2–8°C continuously per validated storage conditions</dd>
+            <dt>Observed</dt>
+            <dd>9.2°C (1.2°C above limit) for ~2h 45min (03:17–06:02). Gradual rise from ~02:30.</dd>
+            <dt>Immediate Actions</dt>
+            <dd>All materials quarantined. Facilities dispatched; condenser fan found stopped. Backup cooling activated. Temperature recovered to 5.1°C by 06:45. QC notified regarding reference standards.</dd>
+          </dl>
+        </div>
+
+        <div class="report-section">
+          <h3><span class="section-num">1</span> Deviation Summary</h3>
+          <p>On 2026-04-28, a temperature excursion was detected in Cold Storage Room CS-02, where the recorded temperature reached 9.2°C, exceeding the validated storage range of 2–8°C by 1.2°C. Continuous monitoring data indicates the excursion began at approximately 02:30 with the alarm triggering at 03:17, and the temperature returned to within specification at 06:02, resulting in an excursion duration of approximately 2 hours and 45 minutes. CS-02 contained API intermediates for Batches LU-2026-0087, LU-2026-0088, and LU-2026-0091, as well as 12 reference standards used in QC testing. Preliminary inspection identified a stopped condenser fan as the likely cause.</p>
+        </div>
+
+        <div class="report-section">
+          <h3><span class="section-num">2</span> Severity Classification</h3>
+          <div class="severity-badge major">Major</div>
+          <p>This deviation represents a significant departure from validated storage conditions for API intermediates and reference standards. The excursion magnitude (1.2°C above the upper limit) and duration (2 hours 45 minutes) are sufficient to warrant investigation into potential impact on material quality, particularly for temperature-sensitive intermediates and reference standards. While the excursion was not extreme, the number of materials affected (three batches of API intermediates plus 12 reference standards) increases the potential scope of impact. Escalation to Critical should be considered if stability data indicates material degradation.</p>
+          <div class="human-review">
+            <strong>⚠ HUMAN REVIEW REQUIRED:</strong> Severity classification must be reviewed and confirmed by the QA reviewer. If stability data for the affected materials indicates sensitivity to the excursion conditions (9.2°C for ~3 hours), escalation to Critical may be warranted.
+          </div>
+        </div>
+
+        <div class="report-section">
+          <h3><span class="section-num">3</span> Impact Assessment</h3>
+          <div class="sub-heading">Product Quality</div>
+          <p>The primary concern is whether the temperature excursion affected the chemical stability, physical properties, or potency of the stored API intermediates. The impact depends on the specific stability profiles of each material at the excursion temperature. Reference standard integrity must also be assessed, as compromised reference standards would affect the validity of all QC test results generated using them.</p>
+          <div class="sub-heading">Patient Safety</div>
+          <p>Indirect risk. If the API intermediates were degraded by the excursion and this went undetected, it could result in subpotent or impure finished product. If reference standards were compromised and continued to be used, QC test results would be unreliable. Both scenarios present potential patient safety risk if not properly investigated.</p>
+          <div class="sub-heading">Batch Disposition</div>
+          <p>Three batches of API intermediates (LU-2026-0087, LU-2026-0088, LU-2026-0091) should remain quarantined until the impact assessment is complete. Twelve reference standards must be assessed for continued suitability before use in further testing.</p>
+          <div class="sub-heading">Scope</div>
+          <p>Assess whether CS-02 has had previous temperature excursions (trend analysis). Determine whether other cold storage rooms share the same cooling system or maintenance schedule. Evaluate whether the condenser fan failure indicates a broader equipment maintenance gap.</p>
+          <div class="human-review">
+            <strong>⚠ HUMAN REVIEW REQUIRED:</strong> Impact assessment requires review by qualified personnel with knowledge of the specific stability profiles of the affected materials. Batch disposition decisions must be made by authorized QA personnel.
+          </div>
+        </div>
+
+        <div class="report-section">
+          <h3><span class="section-num">4</span> Root Cause Investigation Plan</h3>
+          <div class="investigation-category">
+            <h4><span class="cat-icon">●</span> Personnel</h4>
+            <ul>
+              <li>Who was responsible for monitoring overnight alarms? Was there a delay in responding to the alarm at 03:17?</li>
+              <li>What is the escalation procedure for after-hours environmental alarms, and was it followed?</li>
+              <li>Was the morning shift operator who discovered the deviation at 06:00 the first person to check, or was the alarm acknowledged earlier without action?</li>
+            </ul>
+          </div>
+          <div class="investigation-category">
+            <h4><span class="cat-icon">●</span> Process / Method</h4>
+            <ul>
+              <li>What is the alarm response SOP for environmental excursions? Does it define maximum response time?</li>
+              <li>Is there an automated escalation process (SMS/call to on-call personnel) for critical alarms, or does it rely on manual monitoring?</li>
+              <li>When was the last preventive maintenance performed on the CS-02 cooling system? Is the PM schedule adequate?</li>
+            </ul>
+          </div>
+          <div class="investigation-category">
+            <h4><span class="cat-icon">●</span> Equipment / Machine</h4>
+            <ul>
+              <li>What caused the condenser fan to stop? Electrical failure, mechanical wear, control system issue?</li>
+              <li>When was the condenser fan last inspected, serviced, or replaced?</li>
+              <li>Is there redundancy in the cooling system for CS-02? If so, why did the backup not activate automatically?</li>
+              <li>Review calibration records for the temperature monitoring sensors in CS-02.</li>
+            </ul>
+          </div>
+          <div class="investigation-category">
+            <h4><span class="cat-icon">●</span> Material</h4>
+            <ul>
+              <li>What are the validated storage conditions and stability data for each affected API intermediate at temperatures above 8°C?</li>
+              <li>Do the material specifications include data for short-term excursions at 9–10°C?</li>
+              <li>What is the remaining shelf life of each reference standard? Are any near expiry and more susceptible to degradation?</li>
+            </ul>
+          </div>
+          <div class="investigation-category">
+            <h4><span class="cat-icon">●</span> Measurement</h4>
+            <ul>
+              <li>Confirm accuracy of the temperature monitoring system. Cross-reference the reading with an independent calibrated probe if available.</li>
+              <li>Review continuous monitoring data for the period leading up to the excursion. Was it a gradual warming trend or a sudden event?</li>
+            </ul>
+          </div>
+          <div class="investigation-category">
+            <h4><span class="cat-icon">●</span> Environment</h4>
+            <ul>
+              <li>Was there any external factor affecting CS-02 temperature (adjacent equipment, HVAC issues, door left open)?</li>
+              <li>Review door access logs for CS-02 during 02:00–06:00.</li>
+              <li>Were there facility-level power fluctuations or outages that could have affected the cooling unit?</li>
+            </ul>
+          </div>
+          <div class="human-review">
+            <strong>⚠ HUMAN REVIEW REQUIRED:</strong> The investigator determines which areas are relevant and conducts the actual investigation. Equipment root cause analysis should involve Facilities/Engineering.
+          </div>
+        </div>
+
+        <div class="report-section">
+          <h3><span class="section-num">5</span> Draft CAPA Recommendations</h3>
+          <div class="sub-heading">Corrective Actions</div>
+          <div class="capa-item">1. <strong>Complete equipment repair and verification.</strong> Repair or replace the failed condenser fan. Confirm sustained performance within 2–8°C before returning CS-02 to routine use. <span class="capa-owner">(Owner: Facilities/Engineering; may require requalification)</span></div>
+          <div class="capa-item">2. <strong>Conduct stability impact assessment.</strong> Review stability data for each affected API intermediate to determine whether the excursion conditions fall within acceptable limits. Consider retesting if data is insufficient. <span class="capa-owner">(Owner: QC / Stability)</span></div>
+          <div class="capa-item">3. <strong>Assess reference standard integrity.</strong> Retest or replace the 12 reference standards stored in CS-02 during the excursion. <span class="capa-owner">(Owner: QC)</span></div>
+          <div class="capa-item">4. <strong>Determine batch disposition.</strong> Based on stability assessment results, make disposition decisions for affected batches. <span class="capa-owner">(Owner: QA)</span></div>
+          <div class="sub-heading">Preventive Actions</div>
+          <div class="capa-item">1. <strong>Review and upgrade alarm escalation procedures.</strong> Evaluate whether after-hours alarm response is adequate. Consider automated SMS/call escalation with defined maximum response times. <span class="capa-owner">(Owner: QA / Facilities; requires change control)</span></div>
+          <div class="capa-item">2. <strong>Review preventive maintenance schedule.</strong> Assess whether PM frequency and scope are adequate to prevent condenser fan failures. <span class="capa-owner">(Owner: Facilities/Engineering; requires change control)</span></div>
+          <div class="capa-item">3. <strong>Evaluate cooling system redundancy.</strong> Assess whether CS-02 should have automatic backup cooling to prevent excursions from single-point equipment failures. <span class="capa-owner">(Owner: Facilities/Engineering; capital investment may be required)</span></div>
+          <div class="capa-item">4. <strong>Trend analysis of environmental excursions.</strong> Review 12 months of temperature monitoring data across all cold storage rooms. <span class="capa-owner">(Owner: QA)</span></div>
+          <div class="human-review">
+            <strong>⚠ HUMAN REVIEW REQUIRED:</strong> CAPA recommendations are suggestions only. Final plan must be developed with input from Facilities, QC, and QA. Equipment modifications and SOP revisions require formal change control.
+          </div>
+        </div>
+
+        <div class="report-section">
+          <h3><span class="section-num">6</span> Regulatory Considerations</h3>
+          <div class="sub-heading">Applicable Frameworks</div>
+          <div class="reg-item"><strong>ICH Q10 §3.2.1:</strong> Deviation management within the Pharmaceutical Quality System.</div>
+          <div class="reg-item"><strong>ICH Q1A:</strong> Stability data should be consulted to assess excursion impact on affected materials.</div>
+          <div class="reg-item"><strong>EU GMP Chapter 3:</strong> Storage areas must maintain required conditions with adequate environmental monitoring.</div>
+          <div class="reg-item"><strong>EU GMP Annex 15:</strong> Requalification of CS-02 may be required after repair.</div>
+          <div class="reg-item"><strong>21 CFR 211.142:</strong> Requires appropriate storage conditions with adequate temperature controls.</div>
+          <div class="sub-heading">Reporting Considerations</div>
+          <p>Regulatory notification is not typically required unless the impact assessment reveals that affected batches were released to market with compromised quality. Include in Annual Product Review deviation trending and environmental monitoring sections. Temperature excursions are frequently reviewed during inspections.</p>
+          <div class="human-review">
+            <strong>⚠ HUMAN REVIEW REQUIRED:</strong> Regulatory reporting obligations must be assessed by Regulatory Affairs and QA leadership. Particular attention to whether any product from materials in CS-02 has already been released.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ CRITICAL TAB ═══ -->
+    <div id="tab-critical" class="tab-content">
+      <div class="report">
+        <div class="input-summary">
+          <div class="input-summary-label"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M4 2h8a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z" stroke="currentColor" stroke-width="1.3"/><path d="M5 6h6M5 8.5h4M5 11h2" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg> User Input: Deviation Data <span class="input-cursor"></span></div>
+          <dl>
+            <dt>Event</dt>
+            <dd>Cleaning verification failure post-changeover on Tablet Press TP-03. Swab result: 8.4 µg/cm² Nortriptyline HCl residue on punch faces (limit: ≤ 4.0 µg/cm²). Changeover from Nortriptyline 25 mg to Citalopram 20 mg. Cleaning signed off as complete. Product B not yet manufactured.</dd>
+            <dt>Discovered</dt>
+            <dd>2026-04-28, 07:15</dd>
+            <dt>Product / Batch</dt>
+            <dd>Product B: Citalopram 20 mg, Batch CT-2026-0203 (not started). Previous: Nortriptyline HCl 25 mg, Batch NT-2026-0195 (quarantine pending release).</dd>
+            <dt>Process Step</dt>
+            <dd>Equipment cleaning verification: post-changeover, pre-production check</dd>
+            <dt>Expected</dt>
+            <dd>≤ 4.0 µg/cm² residue per Cleaning Validation Protocol CVP-2024-018</dd>
+            <dt>Observed</dt>
+            <dd>Punch faces: 8.4 µg/cm² (210% of limit). Hopper: 1.2 µg/cm² (pass). Feed frame: 0.8 µg/cm² (pass).</dd>
+            <dt>Immediate Actions</dt>
+            <dd>TP-03 on hold. Re-cleaning initiated with additional manual scrubbing. QA hold on previous batch NT-2026-0195. Cleaning team lead notified. All concurrent changeover equipment flagged for review.</dd>
+          </dl>
+        </div>
+
+        <div class="report-section">
+          <h3><span class="section-num">1</span> Deviation Summary</h3>
+          <p>On 2026-04-28 at 07:15, cleaning verification following a product changeover on Tablet Press TP-03 revealed that swab test results from punch face surfaces returned a residue level of 8.4 µg/cm² for the previous product (Nortriptyline HCl 25 mg), exceeding the validated cleaning limit of 4.0 µg/cm² by 110%. The changeover was from Nortriptyline HCl 25 mg tablets (Batch NT-2026-0195) to Citalopram 20 mg tablets (Batch CT-2026-0203). Cleaning was performed per SOP-CL-011 and signed off as complete. The deviation was caught during pre-production verification, and Product B manufacturing had not commenced. Swab samples from the hopper (1.2 µg/cm²) and feed frame (0.8 µg/cm²) were within specification.</p>
+        </div>
+
+        <div class="report-section">
+          <h3><span class="section-num">2</span> Severity Classification</h3>
+          <div class="severity-badge critical">Critical</div>
+          <p>This deviation involves a cleaning verification failure for a product changeover between two different active pharmaceutical ingredients (Nortriptyline HCl and Citalopram). Residual Nortriptyline on product contact surfaces at 210% of the validated limit represents a confirmed cross-contamination risk. Although the deviation was detected before Product B manufacturing commenced, the fact that cleaning was performed, signed off as complete, and yet failed verification indicates a breakdown in the cleaning process that could have resulted in cross-contamination if the pre-production verification step had been missed. The previous batch (NT-2026-0195) warrants retrospective review.</p>
+          <div class="human-review">
+            <strong>⚠ HUMAN REVIEW REQUIRED:</strong> Severity classification must be reviewed and confirmed by the QA reviewer. Critical classification is recommended due to cross-contamination risk between two active pharmaceutical ingredients, even though actual contamination of Product B was prevented.
+          </div>
+        </div>
+
+        <div class="report-section">
+          <h3><span class="section-num">3</span> Impact Assessment</h3>
+          <div class="sub-heading">Product Quality</div>
+          <p><strong>Product B (Citalopram, Batch CT-2026-0203):</strong> Not affected. Manufacturing had not commenced. No product quality impact, provided re-cleaning is verified as effective before production starts.</p>
+          <p><strong>Product A (Nortriptyline, Batch NT-2026-0195):</strong> Not directly affected by this cleaning failure. However, the failure raises questions about whether previous changeovers from other products TO Nortriptyline were adequately cleaned. Retrospective review may be warranted.</p>
+          <p><strong>Cleaning process integrity:</strong> The primary quality concern is that the cleaning process (SOP-CL-011) was signed off as complete but failed analytical verification. This indicates the cleaning procedure, execution, or verification process has a gap.</p>
+          <div class="sub-heading">Patient Safety</div>
+          <p>The cross-contamination risk between Nortriptyline (a tricyclic antidepressant) and Citalopram (an SSRI) is clinically significant. Co-exposure to both compounds could cause serious adverse effects including serotonin syndrome. In this case, patient safety was protected by the pre-production verification step.</p>
+          <div class="sub-heading">Batch Disposition</div>
+          <p>Batch CT-2026-0203 (Citalopram): Not yet manufactured. Hold production until TP-03 passes re-cleaning verification. Batch NT-2026-0195 (Nortriptyline): Maintain quarantine until investigation confirms no retrospective concerns.</p>
+          <div class="sub-heading">Scope</div>
+          <p>Assess whether this was isolated or could have occurred on previous changeovers on TP-03 or other tablet presses. Review cleaning verification results for the last 12 months on TP-03, particularly changeovers involving Nortriptyline HCl. Assess other equipment cleaned using SOP-CL-011 in the same period.</p>
+          <div class="human-review">
+            <strong>⚠ HUMAN REVIEW REQUIRED:</strong> Impact assessment requires review by qualified personnel with knowledge of the specific products, cleaning validation protocols, and toxicological limits. The clinical significance of cross-contamination risk should be confirmed by the site toxicologist or pharmacovigilance team.
+          </div>
+        </div>
+
+        <div class="report-section">
+          <h3><span class="section-num">4</span> Root Cause Investigation Plan</h3>
+          <div class="investigation-category">
+            <h4><span class="cat-icon">●</span> Personnel</h4>
+            <ul>
+              <li>Who performed the cleaning? Review training records for SOP-CL-011 and cleaning verification procedures.</li>
+              <li>Has this operator performed changeover cleaning before? What were prior results?</li>
+              <li>Was cleaning performed during a shift change, under time pressure, or with interruptions?</li>
+              <li>Who signed off cleaning as complete? Was sign-off based on visual inspection only, or procedural verification?</li>
+            </ul>
+          </div>
+          <div class="investigation-category">
+            <h4><span class="cat-icon">●</span> Process / Method</h4>
+            <ul>
+              <li>Does SOP-CL-011 include specific instructions for punch face cleaning (disassembly, manual scrubbing, soaking)?</li>
+              <li>Is the procedure validated specifically for Nortriptyline HCl residue removal? When was cleaning validation last performed?</li>
+              <li>Is there a difference in cleaning difficulty between punch faces and other components (hopper and feed frame passed)?</li>
+              <li>Does the procedure require disassembly of punches, or are they cleaned in place?</li>
+            </ul>
+          </div>
+          <div class="investigation-category">
+            <h4><span class="cat-icon">●</span> Equipment / Machine</h4>
+            <ul>
+              <li>What is the condition of the punch face surfaces? Scratches, pitting, or wear that could trap residue?</li>
+              <li>When were the punches last replaced or refurbished?</li>
+              <li>Are punch faces more difficult to clean due to geometry (engravings, embossing, break lines)?</li>
+              <li>Was cleaning equipment (brushes, spray nozzles) worn or malfunctioning?</li>
+            </ul>
+          </div>
+          <div class="investigation-category">
+            <h4><span class="cat-icon">●</span> Material</h4>
+            <ul>
+              <li>Is Nortriptyline HCl known to be difficult to remove from stainless steel surfaces?</li>
+              <li>Is the cleaning agent effective for Nortriptyline HCl removal? Solubility data available?</li>
+              <li>Were there changes to the Nortriptyline formulation that could affect cleaning difficulty?</li>
+            </ul>
+          </div>
+          <div class="investigation-category">
+            <h4><span class="cat-icon">●</span> Measurement</h4>
+            <ul>
+              <li>Review swab sampling technique. Was the sampling location on the punch faces representative?</li>
+              <li>Confirm analytical method is validated for Nortriptyline HCl at the relevant concentration range.</li>
+              <li>Were swab recovery factors accounted for in the 8.4 µg/cm² result?</li>
+            </ul>
+          </div>
+          <div class="investigation-category">
+            <h4><span class="cat-icon">●</span> Environment</h4>
+            <ul>
+              <li>Were environmental conditions (cleaning water temperature, humidity, drying time) adequate?</li>
+              <li>Was cleaning performed in the designated wash area or on the production floor?</li>
+            </ul>
+          </div>
+          <div class="human-review">
+            <strong>⚠ HUMAN REVIEW REQUIRED:</strong> The investigator determines which areas are relevant. Root cause may involve a combination of factors. Engineering and cleaning validation specialists should be involved.
+          </div>
+        </div>
+
+        <div class="report-section">
+          <h3><span class="section-num">5</span> Draft CAPA Recommendations</h3>
+          <div class="sub-heading">Corrective Actions</div>
+          <div class="capa-item">1. <strong>Complete re-cleaning and verification of TP-03.</strong> Re-clean all product contact surfaces with additional manual scrubbing of punch faces. Do not release for Product B until swab results confirm ≤ 4.0 µg/cm². <span class="capa-owner">(Owner: Production / QA)</span></div>
+          <div class="capa-item">2. <strong>Retrospective review of recent changeovers on TP-03.</strong> Review all changeover cleaning verification results for the last 6–12 months, focusing on changeovers involving Nortriptyline HCl as the preceding product. <span class="capa-owner">(Owner: QA)</span></div>
+          <div class="capa-item">3. <strong>Assess other equipment cleaned in the same period.</strong> Review whether other tablet presses cleaned during the same timeframe (or by the same operator) should be re-verified. <span class="capa-owner">(Owner: QA / Production)</span></div>
+          <div class="capa-item">4. <strong>Hold decision on Batch NT-2026-0195.</strong> Maintain QA hold until retrospective review confirms no concerns about prior cleaning adequacy. <span class="capa-owner">(Owner: QA)</span></div>
+          <div class="sub-heading">Preventive Actions</div>
+          <div class="capa-item">1. <strong>Review and revise cleaning procedure for punch faces.</strong> Evaluate whether SOP-CL-011 requires enhanced steps for punch face surfaces, including disassembly, soaking, or additional scrubbing cycles. Update and revalidate if warranted. <span class="capa-owner">(Owner: Cleaning Validation / QA; requires change control and revalidation)</span></div>
+          <div class="capa-item">2. <strong>Evaluate punch surface condition program.</strong> Implement or review a punch inspection and replacement program. Worn surfaces may trap residue. <span class="capa-owner">(Owner: Engineering / Production; may require change control)</span></div>
+          <div class="capa-item">3. <strong>Assess cleaning agent effectiveness.</strong> Evaluate whether an alternative cleaning agent or enhanced parameters would improve Nortriptyline HCl residue removal. <span class="capa-owner">(Owner: Cleaning Validation; requires change control and revalidation)</span></div>
+          <div class="capa-item">4. <strong>Reinforce cleaning verification as a critical step.</strong> Ensure personnel understand that sign-off confirms procedural completion only. Analytical verification (swab testing) is the definitive measure of cleaning adequacy. Consider adding a checklist prompt. <span class="capa-owner">(Owner: QA / Training; requires change control if SOP modified)</span></div>
+          <div class="human-review">
+            <strong>⚠ HUMAN REVIEW REQUIRED:</strong> CAPA recommendations are suggestions only. Final plan must be developed with input from Cleaning Validation, Engineering, QC, and QA. SOP revisions and cleaning procedure changes require formal change control and may trigger revalidation.
+          </div>
+        </div>
+
+        <div class="report-section">
+          <h3><span class="section-num">6</span> Regulatory Considerations</h3>
+          <div class="sub-heading">Applicable Frameworks</div>
+          <div class="reg-item"><strong>ICH Q10 §3.2.1:</strong> Deviation management within the Pharmaceutical Quality System.</div>
+          <div class="reg-item"><strong>ICH Q9:</strong> Risk assessment should evaluate probability and severity of cross-contamination had the deviation not been detected.</div>
+          <div class="reg-item"><strong>EU GMP Chapter 5, §5.19–5.20:</strong> Prevention of cross-contamination. Cleaning validation must demonstrate residues are reduced to acceptable levels.</div>
+          <div class="reg-item"><strong>EU GMP Annex 15, §10:</strong> Cleaning validation requirements including acceptance criteria and verification methods.</div>
+          <div class="reg-item"><strong>21 CFR 211.67:</strong> Equipment cleaning and maintenance to prevent contamination.</div>
+          <div class="reg-item"><strong>EMA Health-Based Exposure Limits (2014):</strong> If the cleaning limit was established using a PDE/ADE approach, the exceedance should be assessed in that toxicological context.</div>
+          <div class="sub-heading">Reporting Considerations</div>
+          <p>Regulatory notification is not required in this instance because cross-contamination was prevented. However, if the retrospective review reveals that similar failures occurred on previous changeovers where product was manufactured, a field alert assessment would be necessary. Cross-contamination prevention is a high-priority area for regulatory inspectors.</p>
+          <div class="info-needed">
+            <strong>INFORMATION NEEDED:</strong> Confirm whether the cleaning limit of 4.0 µg/cm² was established using a health-based exposure limit (PDE/ADE) approach or a dose-based approach (1/1000th of therapeutic dose). This affects the regulatory and toxicological interpretation of the exceedance.
+          </div>
+          <div class="human-review">
+            <strong>⚠ HUMAN REVIEW REQUIRED:</strong> Regulatory reporting obligations must be assessed by Regulatory Affairs and QA leadership. The retrospective review outcome will determine whether any regulatory notification is required.
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════ TRY IT YOURSELF ═══════════════ -->
+<section class="try-section">
+  <div class="container">
+    <div class="section-label">Try It Yourself</div>
+    <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:1.25rem; max-width:720px;">
+      Enter a deviation description below and the system will generate a structured analysis. All fields help the AI produce more specific, actionable output, but only the event description is required.
+    </p>
+    <div class="try-form">
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label for="f-event">Event Description *</label>
+          <textarea id="f-event" placeholder="What happened? Describe the deviation event factually." rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="f-date">Discovery Date / Time</label>
+          <input type="text" id="f-date" placeholder="e.g. 2026-04-28, 14:30">
+        </div>
+        <div class="form-group">
+          <label for="f-product">Product / Batch</label>
+          <input type="text" id="f-product" placeholder="Product name and batch number">
+        </div>
+        <div class="form-group">
+          <label for="f-step">Process Step</label>
+          <input type="text" id="f-step" placeholder="Where in the process did this occur?">
+        </div>
+        <div class="form-group">
+          <label for="f-expected">Expected Parameter</label>
+          <input type="text" id="f-expected" placeholder="The validated specification or limit">
+        </div>
+        <div class="form-group">
+          <label for="f-observed">Observed Value</label>
+          <input type="text" id="f-observed" placeholder="What was actually measured or observed?">
+        </div>
+        <div class="form-group">
+          <label for="f-actions">Immediate Actions Taken</label>
+          <input type="text" id="f-actions" placeholder="Any containment actions already performed">
+        </div>
+      </div>
+      <div class="submit-row">
+        <button class="btn-submit" onclick="submitDeviation()">Generate Analysis</button>
+        <div class="spinner" id="spinner"></div>
+        <span class="submit-status" id="submit-status"></span>
+      </div>
+    </div>
+    <div class="try-result" id="try-result" style="display:none;"></div>
+  </div>
+</section>
+
+<!-- ═══════════════ LIMITATIONS ═══════════════ -->
+<section class="limitations">
+  <div class="container">
+    <div class="section-label">What This Prototype Does Not Do</div>
+    <div class="limitations-content">
+      <div class="limitation-col">
+        <h4>Not a Decision-Maker</h4>
+        <p>This system does not close deviations, approve batch disposition, determine root causes, or make regulatory submission decisions. Every output is a draft requiring qualified human review. In a GxP environment, AI assists. It does not decide.</p>
+      </div>
+      <div class="limitation-col">
+        <h4>Not Context-Aware (Yet)</h4>
+        <p>This prototype has no access to a Quality Management System, historical deviation data, or site-specific SOPs. A production version would use retrieval-augmented generation (RAG) to connect to these systems, enabling trend analysis and site-specific recommendations. The architecture is designed to support this.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer class="site-footer">
+  <div class="container">
+    <span>Adam Grøfte Barfod · adam0406@gmail.com · +45 41 62 45 30</span>
+    <span>Prototype built with n8n + ChatGPT 5.5 API</span>
+  </div>
+</footer>
+
+<script>
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  const tabs = document.querySelectorAll('.tab');
+  tabs.forEach(t => {
+    if (t.textContent.toLowerCase().includes(name)) t.classList.add('active');
+  });
+}
+
+// IMPORTANT: Replace this URL with your n8n production webhook URL
+const WEBHOOK_URL = 'https://adambarfod.app.n8n.cloud/webhook/1805b516-d656-4a33-b6ee-0472a8e25376';
+
+async function submitDeviation() {
+  const event = document.getElementById('f-event').value.trim();
+  if (!event) {
+    document.getElementById('submit-status').textContent = 'Please enter an event description.';
+    return;
+  }
+
+  const btn = document.querySelector('.btn-submit');
+  const spinner = document.getElementById('spinner');
+  const status = document.getElementById('submit-status');
+  const result = document.getElementById('try-result');
+
+  btn.disabled = true;
+  spinner.style.display = 'inline-block';
+  status.textContent = 'Analyzing deviation. This may take 15 to 30 seconds...';
+  result.style.display = 'none';
+
+  const payload = {
+    event_description: event,
+    discovery_date: document.getElementById('f-date').value.trim() || 'Not specified',
+    product_batch: document.getElementById('f-product').value.trim() || 'Not specified',
+    process_step: document.getElementById('f-step').value.trim() || 'Not specified',
+    expected_parameter: document.getElementById('f-expected').value.trim() || 'Not specified',
+    observed_value: document.getElementById('f-observed').value.trim() || 'Not specified',
+    immediate_actions: document.getElementById('f-actions').value.trim() || 'Not specified'
+  };
+
+  try {
+    const response = await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) throw new Error('Server returned ' + response.status);
+
+    const data = await response.json();
+    result.innerHTML = '<div class="report">' + data.html + '</div>';
+    result.style.display = 'block';
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (err) {
+    status.textContent = 'Error: Could not reach the analysis server. Please try again.';
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+    spinner.style.display = 'none';
+    if (result.style.display === 'block') status.textContent = '';
+  }
+}
+
+// ── Particle network system ──
+(function() {
+  const canvas = document.getElementById('hero-particles');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let nodes = [];
+  let time = 0;
+  const PARTICLE_COUNT = 55;
+  const NODE_COUNT = 6;
+  const CONNECT_DIST = 150;
+
+  function resize() {
+    const hero = canvas.parentElement;
+    canvas.width = hero.offsetWidth;
+    canvas.height = hero.offsetHeight;
+    init();
+  }
+
+  function init() {
+    particles = [];
+    nodes = [];
+    // Drifting particles
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 1.8 + 0.5,
+        dx: (Math.random() - 0.5) * 0.4,
+        dy: (Math.random() - 0.5) * 0.3,
+        alpha: Math.random() * 0.4 + 0.1,
+        type: 'drift'
+      });
+    }
+    // Pulsing anchor nodes (larger, stationary, glow)
+    for (let i = 0; i < NODE_COUNT; i++) {
+      nodes.push({
+        x: (canvas.width * 0.1) + Math.random() * (canvas.width * 0.8),
+        y: (canvas.height * 0.1) + Math.random() * (canvas.height * 0.8),
+        r: 2.5,
+        phase: Math.random() * Math.PI * 2,
+        speed: 0.02 + Math.random() * 0.015
+      });
+    }
+  }
+
+  function draw() {
+    time++;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // All points for connection lines
+    const allPoints = [
+      ...particles.map(p => ({ x: p.x, y: p.y, alpha: p.alpha })),
+      ...nodes.map(n => ({ x: n.x, y: n.y, alpha: 0.5 + 0.3 * Math.sin(n.phase + time * n.speed) }))
+    ];
+
+    // Connection lines
+    for (let i = 0; i < allPoints.length; i++) {
+      for (let j = i + 1; j < allPoints.length; j++) {
+        const dx = allPoints[i].x - allPoints[j].x;
+        const dy = allPoints[i].y - allPoints[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < CONNECT_DIST) {
+          const strength = 1 - dist / CONNECT_DIST;
+          ctx.beginPath();
+          ctx.moveTo(allPoints[i].x, allPoints[i].y);
+          ctx.lineTo(allPoints[j].x, allPoints[j].y);
+          ctx.strokeStyle = 'rgba(45,90,39,' + (0.12 * strength) + ')';
+          ctx.lineWidth = 0.6;
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Draw drifting particles
+    particles.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(45,90,39,' + p.alpha + ')';
+      ctx.fill();
+
+      p.x += p.dx;
+      p.y += p.dy;
+
+      if (p.y < -10) p.y = canvas.height + 10;
+      if (p.y > canvas.height + 10) p.y = -10;
+      if (p.x < -10) p.x = canvas.width + 10;
+      if (p.x > canvas.width + 10) p.x = -10;
+    });
+
+    // Draw pulsing anchor nodes with glow
+    nodes.forEach(n => {
+      const pulse = Math.sin(n.phase + time * n.speed);
+      const r = n.r + pulse * 1.2;
+      const glowAlpha = 0.15 + 0.1 * pulse;
+      const coreAlpha = 0.5 + 0.3 * pulse;
+
+      // Outer glow
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, r + 8, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(45,90,39,' + glowAlpha + ')';
+      ctx.fill();
+
+      // Mid ring
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, r + 3, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(45,90,39,' + (glowAlpha * 1.5) + ')';
+      ctx.fill();
+
+      // Core
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(45,90,39,' + coreAlpha + ')';
+      ctx.fill();
+    });
+
+    // Occasional traveling pulse along a connection
+    if (time % 90 === 0 && allPoints.length > 1) {
+      const idx = Math.floor(Math.random() * allPoints.length);
+      let closest = -1, closestDist = Infinity;
+      for (let j = 0; j < allPoints.length; j++) {
+        if (j === idx) continue;
+        const dx = allPoints[idx].x - allPoints[j].x;
+        const dy = allPoints[idx].y - allPoints[j].y;
+        const d = Math.sqrt(dx * dx + dy * dy);
+        if (d < CONNECT_DIST && d < closestDist) { closest = j; closestDist = d; }
+      }
+      if (closest >= 0) {
+        pulses.push({
+          x1: allPoints[idx].x, y1: allPoints[idx].y,
+          x2: allPoints[closest].x, y2: allPoints[closest].y,
+          t: 0
+        });
+      }
+    }
+
+    // Draw traveling pulses
+    for (let i = pulses.length - 1; i >= 0; i--) {
+      const p = pulses[i];
+      p.t += 0.04;
+      if (p.t > 1) { pulses.splice(i, 1); continue; }
+      const px = p.x1 + (p.x2 - p.x1) * p.t;
+      const py = p.y1 + (p.y2 - p.y1) * p.t;
+      const alpha = Math.sin(p.t * Math.PI) * 0.8;
+
+      ctx.beginPath();
+      ctx.arc(px, py, 2.5, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(45,90,39,' + alpha + ')';
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(px, py, 6, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(45,90,39,' + (alpha * 0.3) + ')';
+      ctx.fill();
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  const pulses = [];
+  init();
+  draw();
+  window.addEventListener('resize', resize);
+})();
+</script>
+
+</body>
+</html>
